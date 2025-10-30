@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
+import ThemeToggle from "../components/ThemeToggle";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -24,9 +26,32 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <head>
+        <Script id="theme-init" strategy="beforeInteractive">
+          {`
+            try {
+              const stored = localStorage.getItem('theme');
+              const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+              const initial = stored === 'light' || stored === 'dark' ? stored : (systemDark ? 'dark' : 'light');
+              document.documentElement.setAttribute('data-theme', initial);
+            } catch {}
+          `}
+        </Script>
+      </head>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <header style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "flex-end",
+          gap: 12,
+          padding: "0.75rem 1rem",
+          position: "sticky",
+          top: 0,
+          backdropFilter: "saturate(120%) blur(6px)",
+          WebkitBackdropFilter: "saturate(120%) blur(6px)",
+        }}>
+          <ThemeToggle />
+        </header>
         {children}
       </body>
     </html>
